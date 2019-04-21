@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <Name Value="Pas6502"/>
+    <Type Value="RunTimeOnly"/>
+    <Author Value="Kevin Veroneau"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)/"/>
+      </SearchPaths>
+    </CompilerOptions>
+    <Description Value="This is my 65c02 CPU Emulator/Virtual Machine made in ObjectPascal for use in my upcoming ArcVM project.  This CPU is not cycle acurate, as that was not the point of it's development.  It will run as fast as possible on the host operating system."/>
+    <License Value="This is licensed under the GPLv2, and therefore can be used in other programs as long as the entire program is open source, and potential bug fixes and patches are provided upstream.  Not much to ask, right?"/>
+    <Version Minor="1"/>
+    <Files Count="1">
+      <Item1>
+        <Filename Value="cpu6502.pas"/>
+        <UnitName Value="cpu6502"/>
+      </Item1>
+    </Files>
+    <RequiredPkgs Count="1">
+      <Item1>
+        <PackageName Value="FCL"/>
+      </Item1>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <DestinationDirectory Value="$(ProjPath)/published/"/>
+      <CompressFinally Value="False"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

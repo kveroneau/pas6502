@@ -1,3 +1,5 @@
-# pas6502
+# 65c02 Emulator/VM in ObjectPascal
 
-This is my 65c02 CPU Emulator/Virtual Machine made in ObjectPascal for use in my upcoming ArcVM project.  This CPU is not cycle acurate, as that was not the point of it&#39;s development.  It will run as fast as possible on the host operating system.
+This is my 65c02 CPU Emulator/Virtual Machine made in ObjectPascal for use in my upcoming ArcVM project.  This CPU is not cycle acurate, as that was not the point of it's development.  It will run as fast as possible on the host operating system.
+
+This is a Lazarus Package, although you shouldn't need to have Lazarus installed in order to build the unit files and use them in your own project.  If you wish to use this inside a closed-sourced project, you can create a shared library (.so/.dll) and link your closed-source project to the shared library.  Many closed-source projects use GPLv2 code like this, and if it's generally not allowed through the GPLv2 license, then I hereby grant permission for you to use this within an externally linked shared library file.  It cannot be statically linked, as then it becomes part of your binary code.  If you do use this code in any way shape or form, please provide with it the required license information and my name as the general author of the code.
