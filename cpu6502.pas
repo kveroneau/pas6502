@@ -67,6 +67,7 @@ type
   T6502Memory = class(TStream)
   private
     FMemory: Pointer;
+    FPosition: PtrInt;
   public
     constructor Create;
     destructor Destroy; override;
@@ -74,6 +75,12 @@ type
     function getB(addr: Word): Byte;
     procedure setW(addr, value: Word);
     function getW(addr: Word): Word;
+    function Read(var Buffer; Count: Longint): Longint; override;
+    function Write(const Buffer; Count: Longint): Longint; override;
+    function Seek(const Offset: int64; Origin: TSeekOrigin): Longint;
+    procedure LoadFromStream(Stream: TStream);
+    procedure LoadFromFile(const FileName: string);
+    property Position: PtrInt read FPosition write FPosition;
   end;
 
   T6502 = class(TObject)
@@ -82,6 +89,9 @@ type
     regP: TCPUFlags;
     regA, regX, regY, regSP: Byte;
     regPC, regSS: Word;
+    FRunning: Boolean;
+    intr_tbl: array[0..255] of Word;
+    intr_ptr: Byte;
     procedure set_nv_flags(value: Byte);
     procedure setA(value: Byte);
     procedure setX(value: Byte);
@@ -113,9 +123,19 @@ type
     destructor Destroy; override;
     property Memory: T6502Memory read FMemory;
     property Flags: TCPUFlags read regP;
+    property Running: Boolean read FRunning;
+    procedure Reset(PC: Word);
+    procedure RunSlice;
+    procedure Run;
+    procedure IRQ(addr: Word);
+    procedure BRK;
+    procedure NMI;
   end;
 
 implementation
+
+const
+  MSize=$ffff; { Although this should never change... }
 
 { T6502 }
 
@@ -899,11 +919,75 @@ begin
   inherited Destroy;
 end;
 
+procedure T6502.Reset(PC: Word);
+begin
+  regA:=0;
+  regX:=0;
+  regY:=0;
+  regP.Reg:=0;
+  regPC:=PC;
+  regSP:=$ff;
+  regSS:=$100;
+  FRunning:=False;
+  intr_ptr:=0;
+end;
+
+procedure T6502.RunSlice;
+var
+  addr: Word;
+begin
+  FRunning:=True;
+  if (intr_ptr>0) and (not regP.Flag.Interrupt) then
+  begin
+    { An external interrupt is waiting in our queue... }
+    intr_ptr:=intr_ptr-1;
+    addr:=intr_tbl[intr_ptr];
+    push((regPC shr 8) and $ff); { Push the stack for RTI }
+    push(regPC and $ff);
+    push(regP.Reg);
+    regPC:=addr; { The first opcode in an ISR should be SEI! }
+  end;
+  process_op;
+end;
+
+procedure T6502.Run;
+begin
+  Repeat
+    RunSlice;
+  until not FRunning;
+end;
+
+procedure T6502.IRQ(addr: Word);
+begin
+  { This is only useful if you have an IRQ table or know what you are doing! }
+  if not regP.Flag.Interrupt then
+  begin
+    intr_tbl[intr_ptr]:=addr;
+    intr_ptr:=intr_ptr+1;
+    regP.Flag.Break:=True; { The BRK CPU flag is set for all external ISR. }
+  end;
+end;
+
+procedure T6502.BRK;
+begin
+  { This can be triggered from the outside application for a hw BRK. }
+  IRQ(FMemory.getW($fffe)) { Call the standard ISR }
+end;
+
+procedure T6502.NMI;
+begin
+  { Non-maskable Interrupt, this cannot be blocked via SEI! }
+  push((regPC shr 8) and $ff); { Push the stack for RTI }
+  push(regPC and $ff);
+  push(regP.Reg);
+  regPC:=FMemory.getW($fffa); { $FFFA is the normal NMI vector on 6502 }
+end;
+
 { T6502Memory }
 
 constructor T6502Memory.Create;
 begin
-  FMemory:=AllocMem($ffff);
+  FMemory:=AllocMem(MSize);
 end;
 
 destructor T6502Memory.Destroy;
@@ -932,6 +1016,65 @@ end;
 function T6502Memory.getW(addr: Word): Word;
 begin
   Result:=getB(addr)+(getB(addr+1) shl 8);
+end;
+
+function T6502Memory.Read(var Buffer; Count: Longint): Longint;
+begin
+  Result:=0;
+  if (FPosition<MSize) and (FPosition>=0) then
+  begin
+    Result:=Count;
+    if (Result>(MSize-FPosition)) then
+      Result:=MSize-FPosition;
+    Move((FMemory+FPosition)^, Buffer, Result);
+    FPosition:=FPosition+Result;
+  end;
+end;
+
+function T6502Memory.Write(const Buffer; Count: Longint): Longint;
+begin
+  Result:=0;
+  if (FPosition<MSize) and (FPosition>=0) then
+  begin
+    Result:=Count;
+    if (Result>(MSize-FPosition)) then
+      Result:=MSize-FPosition;
+    Move(Buffer, (FMemory+FPosition)^, Result);
+    FPosition:=FPosition+Result;
+  end;
+end;
+
+function T6502Memory.Seek(const Offset: int64; Origin: TSeekOrigin): Longint;
+begin
+  case Word(Origin) of
+    soFromBeginning : FPosition:=Offset;
+    soFromEnd       : FPosition:=MSize+Offset;
+    soFromCurrent   : FPosition:=FPosition+Offset;
+  end;
+  Result:=FPosition;
+end;
+
+procedure T6502Memory.LoadFromStream(Stream: TStream);
+var
+  Count: Longint;
+begin
+  Count:=Stream.Size;
+  Stream.Position:=0;
+  if Stream.Size > (MSize-FPosition) then
+    Count:=MSize-FPosition;
+  Stream.ReadBuffer((FMemory+FPosition)^, Count);
+end;
+
+procedure T6502Memory.LoadFromFile(const FileName: string);
+var
+  S: TFileStream;
+begin
+  S:=TFileStream.Create(FileName,fmOpenRead or fmShareDenyWrite);
+  try
+    LoadFromStream(S);
+  finally
+    S.Free;
+  end;
 end;
 
 end.
