@@ -61,6 +61,7 @@ type
       0: (Reg: Byte);
       1: (Flag: TFlags);
   end;
+  TIOCallbackFunc = function(addr: Word): Boolean of object;
 
   { T6502Memory }
 
@@ -68,6 +69,9 @@ type
   private
     FMemory: Pointer;
     FPosition: PtrInt;
+    FIOMap: Array[0..$ff] of TIOCallbackFunc;
+    procedure ResetIOMap;
+    function CStackPointer: Word;
   public
     constructor Create;
     destructor Destroy; override;
@@ -80,7 +84,10 @@ type
     function Seek(const Offset: int64; Origin: TSeekOrigin): Longint;
     procedure LoadFromStream(Stream: TStream);
     procedure LoadFromFile(const FileName: string);
+    function HandleIOCall(addr: Word): Boolean;
+    procedure SetIOCallback(addr: Byte; callback: TIOCallbackFunc);
     property Position: PtrInt read FPosition write FPosition;
+    property csp: Word read CStackPointer;
   end;
 
   T6502 = class(TObject)
@@ -118,6 +125,7 @@ type
     function pop: Byte;
     procedure branch(offset: Byte);
     procedure process_op;
+    function default_BRK(addr: Word): Boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -130,6 +138,12 @@ type
     procedure IRQ(addr: Word);
     procedure BRK;
     procedure NMI;
+    { This method names will change in the future... }
+    function popax: Word;
+    procedure setax(value: Word);
+    function getax: Word;
+    function cs_popa: Byte;
+    function read_string(addr: Word): string;
   end;
 
 implementation
@@ -907,6 +921,12 @@ begin
   end;
 end;
 
+function T6502.default_BRK(addr: Word): Boolean;
+begin
+  FRunning:=False; { Let the main CPU instance know it's time to end. }
+  Result:=True; { We handled the IO call. }
+end;
+
 constructor T6502.Create;
 begin
   FMemory:=T6502Memory.Create;
@@ -930,6 +950,10 @@ begin
   regSS:=$100;
   FRunning:=False;
   intr_ptr:=0;
+  FMemory.setW($fffa, $fff0); { Default NMI handler. }
+  FMemory.setW($fffc, PC); { Set the RESET vector to allow for soft restarts. }
+  FMemory.setW($fffe, $fff0); { Default BRK/IRQ handler. }
+  FMemory.SetIOCallback($f0, @default_BRK); { Set our IO callback! }
 end;
 
 procedure T6502.RunSlice;
@@ -942,12 +966,17 @@ begin
     { An external interrupt is waiting in our queue... }
     intr_ptr:=intr_ptr-1;
     addr:=intr_tbl[intr_ptr];
+    regP.Flag.Break:=False; { BRK Flag isn't set for external interrupts. }
     push((regPC shr 8) and $ff); { Push the stack for RTI }
     push(regPC and $ff);
     push(regP.Reg);
-    regPC:=addr; { The first opcode in an ISR should be SEI! }
+    regP.Flag.Interrupt:=True; { Set interrupt disable only after pushing P }
+    regPC:=addr;
   end;
-  process_op;
+  if FMemory.HandleIOCall(regPC) then
+    regPC:=popax+1 { Simulate RTS }
+  else
+    process_op;
 end;
 
 procedure T6502.Run;
@@ -964,7 +993,6 @@ begin
   begin
     intr_tbl[intr_ptr]:=addr;
     intr_ptr:=intr_ptr+1;
-    regP.Flag.Break:=True; { The BRK CPU flag is set for all external ISR. }
   end;
 end;
 
@@ -983,15 +1011,72 @@ begin
   regPC:=FMemory.getW($fffa); { $FFFA is the normal NMI vector on 6502 }
 end;
 
+function T6502.popax: Word;
+begin
+  Result:=(pop or (pop shl 8));
+end;
+
+procedure T6502.setax(value: Word);
+begin
+  regA:=value and $ff;
+  regX:=value shr 8;
+end;
+
+function T6502.getax: Word;
+begin
+  Result:=(regX shl 8)+regA;
+end;
+
+function T6502.cs_popa: Byte;
+var
+  sp: Word;
+begin
+  { Pops a single Byte from the C runtime stack. }
+  sp:=FMemory.getW($80);
+  Result:=FMemory.getB(sp);
+  sp:=sp+1;
+  FMemory.setW($80,sp);
+end;
+
+function T6502.read_string(addr: Word): string;
+var
+  b: Byte;
+begin
+  { This function reads a null-terminated string from 6502 memory. }
+  Result:='';
+  b:=FMemory.getB(addr);
+  while b <> 0 do
+  begin
+    Result:=Result+chr(b);
+    addr:=addr+1;
+    b:=FMemory.getB(addr);
+  end;
+end;
+
 { T6502Memory }
+
+procedure T6502Memory.ResetIOMap;
+var
+  i: Byte;
+begin
+  for i := 0 to $ff do
+    FIOMap[i]:=nil; { Ensure all pointers are nil! }
+end;
+
+function T6502Memory.CStackPointer: Word;
+begin
+  Result:=getW($80); { Standard C stack pointer location for cc65 runtime. }
+end;
 
 constructor T6502Memory.Create;
 begin
   FMemory:=AllocMem(MSize);
+  ResetIOMap;
 end;
 
 destructor T6502Memory.Destroy;
 begin
+  ResetIOMap; { Nil all function pointers before we destrory instance. }
   Freemem(FMemory);
   FMemory:=nil;
   inherited Destroy;
@@ -1075,6 +1160,21 @@ begin
   finally
     S.Free;
   end;
+end;
+
+function T6502Memory.HandleIOCall(addr: Word): Boolean;
+var
+  v: Byte;
+begin
+  v:=addr and $ff;
+  Result:=False;
+  if Assigned(FIOMap[v]) then
+    Result:=FIOMap[v](addr);
+end;
+
+procedure T6502Memory.SetIOCallback(addr: Byte; callback: TIOCallbackFunc);
+begin
+  FIOMap[addr]:=callback;
 end;
 
 end.
