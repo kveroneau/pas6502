@@ -1,0 +1,91 @@
+Modules list:
+-------------
+hellovm.o:
+    CODE              Offs=000000  Size=00000F  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=000035  Align=00001  Fill=0000
+clib/cdemo.lib(condes.o):
+    CODE              Offs=00000F  Size=00000C  Align=00001  Fill=0000
+    DATA              Offs=000000  Size=000025  Align=00001  Fill=0000
+    ONCE              Offs=000000  Size=00000C  Align=00001  Fill=0000
+clib/cdemo.lib(crt0.o):
+    STARTUP           Offs=000000  Size=00001B  Align=00001  Fill=0000
+clib/cdemo.lib(puts.o):
+clib/cdemo.lib(zerobss.o):
+    CODE              Offs=00001B  Size=000023  Align=00001  Fill=0000
+clib/cdemo.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000080  000099  00001A  00001
+STARTUP               000900  00091A  00001B  00001
+ONCE                  00091B  000926  00000C  00001
+CODE                  000927  000964  00003E  00001
+RODATA                000965  000999  000035  00001
+DATA                  00099A  0009BE  000025  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               002000 RLA    __BSS_SIZE__              000000 REA    
+__CONSTRUCTOR_COUNT__     000000 REA    __CONSTRUCTOR_TABLE__     000927 RLA    
+__DESTRUCTOR_COUNT__      000000 REA    __DESTRUCTOR_TABLE__      00099A RLA    
+__HEAP_SIZE__             005000 REA    __HEAP_START__            002000 RLA    
+__STARTUP__               000001 REA    _main                     000927 RLA    
+_puts                     00FFD0 REA    donelib                   000936 RLA    
+initlib                   00091B RLA    ptr1                      000088 RLZ    
+sp                        000080 RLZ    zerobss                   000942 RLA    
+
+
+
+Exports list by value:
+----------------------
+__BSS_SIZE__              000000 REA    __CONSTRUCTOR_COUNT__     000000 REA    
+__DESTRUCTOR_COUNT__      000000 REA    __STARTUP__               000001 REA    
+sp                        000080 RLZ    ptr1                      000088 RLZ    
+initlib                   00091B RLA    __CONSTRUCTOR_TABLE__     000927 RLA    
+_main                     000927 RLA    donelib                   000936 RLA    
+zerobss                   000942 RLA    __DESTRUCTOR_TABLE__      00099A RLA    
+__BSS_RUN__               002000 RLA    __HEAP_START__            002000 RLA    
+__HEAP_SIZE__             005000 REA    _puts                     00FFD0 REA    
+
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    zerobss.o                 common/zerobss.s(8)
+__BSS_SIZE__ ([linker generated]):
+    zerobss.o                 common/zerobss.s(8)
+__CONSTRUCTOR_COUNT__ ([linker generated]):
+    condes.o                  runtime/condes.s(18)
+__CONSTRUCTOR_TABLE__ ([linker generated]):
+    condes.o                  runtime/condes.s(18)
+__DESTRUCTOR_COUNT__ ([linker generated]):
+    condes.o                  runtime/condes.s(19)
+__DESTRUCTOR_TABLE__ ([linker generated]):
+    condes.o                  runtime/condes.s(19)
+__HEAP_SIZE__ ([linker generated]):
+    crt0.o                    crt0.s(5)
+__HEAP_START__ ([linker generated]):
+    crt0.o                    crt0.s(5)
+__STARTUP__ (crt0.o):
+    hellovm.o                 hellovm.s(13)
+_main (hellovm.o):
+    crt0.o                    crt0.s(2)
+_puts (puts.o):
+    hellovm.o                 hellovm.s(14)
+donelib (condes.o):
+    crt0.o                    crt0.s(7)
+initlib (condes.o):
+    crt0.o                    crt0.s(7)
+ptr1 (zeropage.o):
+    zerobss.o                 common/zerobss.s(9)
+sp (zeropage.o):
+    crt0.o                    /home/kveroneau/src/cc65/asminc/zeropage.inc(11)
+zerobss (zerobss.o):
+    crt0.o                    crt0.s(7)
+

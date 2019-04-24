@@ -1,0 +1,256 @@
+Modules list:
+-------------
+advdemo.o:
+    CODE              Offs=000000  Size=000118  Align=00001  Fill=0000
+    RODATA            Offs=000000  Size=00001F  Align=00001  Fill=0000
+clib/cdemo.lib(_heap.o):
+    DATA              Offs=000000  Size=00000A  Align=00001  Fill=0000
+    ONCE              Offs=000000  Size=000010  Align=00001  Fill=0000
+clib/cdemo.lib(_hextab.o):
+    RODATA            Offs=00001F  Size=000010  Align=00001  Fill=0000
+clib/cdemo.lib(addysp.o):
+    CODE              Offs=000118  Size=00000E  Align=00001  Fill=0000
+clib/cdemo.lib(condes.o):
+    CODE              Offs=000126  Size=00000C  Align=00001  Fill=0000
+    DATA              Offs=00000A  Size=000025  Align=00001  Fill=0000
+    ONCE              Offs=000010  Size=00000C  Align=00001  Fill=0000
+clib/cdemo.lib(crt0.o):
+    STARTUP           Offs=000000  Size=000018  Align=00001  Fill=0000
+clib/cdemo.lib(decsp3.o):
+    CODE              Offs=000132  Size=00000D  Align=00001  Fill=0000
+clib/cdemo.lib(incax3.o):
+    CODE              Offs=00013F  Size=000005  Align=00001  Fill=0000
+clib/cdemo.lib(incaxy.o):
+    CODE              Offs=000144  Size=00000B  Align=00001  Fill=0000
+clib/cdemo.lib(incsp2.o):
+    CODE              Offs=00014F  Size=000016  Align=00001  Fill=0000
+clib/cdemo.lib(incsp6.o):
+    CODE              Offs=000165  Size=000005  Align=00001  Fill=0000
+clib/cdemo.lib(itoa.o):
+    CODE              Offs=00016A  Size=000094  Align=00001  Fill=0000
+    RODATA            Offs=00002F  Size=000007  Align=00001  Fill=0000
+clib/cdemo.lib(ldaxsp.o):
+    CODE              Offs=0001FE  Size=000009  Align=00001  Fill=0000
+clib/cdemo.lib(leaaxsp.o):
+    CODE              Offs=000207  Size=00000C  Align=00001  Fill=0000
+clib/cdemo.lib(malloc.o):
+    CODE              Offs=000213  Size=00010E  Align=00001  Fill=0000
+clib/cdemo.lib(pusha.o):
+    CODE              Offs=000321  Size=000016  Align=00001  Fill=0000
+clib/cdemo.lib(pushax.o):
+    CODE              Offs=000337  Size=00001A  Align=00001  Fill=0000
+clib/cdemo.lib(puts.o):
+clib/cdemo.lib(staspidx.o):
+    CODE              Offs=000351  Size=000016  Align=00001  Fill=0000
+clib/cdemo.lib(staxsp.o):
+    CODE              Offs=000367  Size=00000B  Align=00001  Fill=0000
+clib/cdemo.lib(staxspi.o):
+    CODE              Offs=000372  Size=00001B  Align=00001  Fill=0000
+clib/cdemo.lib(strcpy.o):
+    CODE              Offs=00038D  Size=00001F  Align=00001  Fill=0000
+clib/cdemo.lib(subysp.o):
+    CODE              Offs=0003AC  Size=00000D  Align=00001  Fill=0000
+clib/cdemo.lib(zeropage.o):
+    ZEROPAGE          Offs=000000  Size=00001A  Align=00001  Fill=0000
+advlib.o:
+
+
+Segment list:
+-------------
+Name                   Start     End    Size  Align
+----------------------------------------------------
+ZEROPAGE              000080  000099  00001A  00001
+STARTUP               000900  000917  000018  00001
+ONCE                  000918  000935  00001E  00001
+CODE                  000936  000CEE  0003B9  00001
+RODATA                000CEF  000D24  000036  00001
+DATA                  000D25  000D53  00002F  00001
+
+
+Exports list by name:
+---------------------
+__BSS_RUN__               002000 RLA    __BSS_SIZE__              000000 REA    
+__CONSTRUCTOR_COUNT__     000001 REA    __CONSTRUCTOR_TABLE__     000934 RLA    
+__DESTRUCTOR_COUNT__      000000 REA    __DESTRUCTOR_TABLE__      000D25 RLA    
+__HEAP_SIZE__             005000 REA    __HEAP_START__            002000 RLA    
+__STACKSIZE__             000200 REA    __STARTUP__               000001 REA    
+__heapend                 000D29 RLA    __heapfirst               000D2B RLA    
+__heaplast                000D2D RLA    __heapptr                 000D27 RLA    
+__hextab                  000D0E RLA    _itoa                     000ABE RLA    
+_lf                       00FFD3 REA    _main                     00097E RLA    
+_malloc                   000B49 RLA    _puts                     00FFD0 REA    
+_strcpy                   000CC3 RLA    _testit                   00FFD1 REA    
+_testme                   00FFD2 REA    addysp                    000A4F RLA    
+addysp1                   000A4E RLA    decsp3                    000A68 RLA    
+donelib                   000A5C RLA    incax3                    000A75 RLA    
+incaxy                    000A7C RLA    incsp2                    000A8D RLA    
+incsp6                    000A9B RLA    initheap                  000918  LAI   
+initlib                   000928 RLA    ldaxysp                   000B36 RLA    
+leaa0sp                   000B3D RLA    popax                     000A85 RLA    
+ptr1                      000088 RLZ    ptr2                      00008A RLZ    
+ptr3                      00008C RLZ    pusha                     000C5B RLA    
+pushax                    000C71 RLA    sp                        000080 RLZ    
+sreg                      000082 RLZ    staspidx                  000C87 RLA    
+staxspidx                 000CA8 RLA    staxysp                   000C9F RLA    
+subysp                    000CE2 RLA    tmp1                      000090 RLZ    
+
+
+
+Exports list by value:
+----------------------
+__BSS_SIZE__              000000 REA    __DESTRUCTOR_COUNT__      000000 REA    
+__CONSTRUCTOR_COUNT__     000001 REA    __STARTUP__               000001 REA    
+sp                        000080 RLZ    sreg                      000082 RLZ    
+ptr1                      000088 RLZ    ptr2                      00008A RLZ    
+ptr3                      00008C RLZ    tmp1                      000090 RLZ    
+__STACKSIZE__             000200 REA    initheap                  000918  LAI   
+initlib                   000928 RLA    __CONSTRUCTOR_TABLE__     000934 RLA    
+_main                     00097E RLA    addysp1                   000A4E RLA    
+addysp                    000A4F RLA    donelib                   000A5C RLA    
+decsp3                    000A68 RLA    incax3                    000A75 RLA    
+incaxy                    000A7C RLA    popax                     000A85 RLA    
+incsp2                    000A8D RLA    incsp6                    000A9B RLA    
+_itoa                     000ABE RLA    ldaxysp                   000B36 RLA    
+leaa0sp                   000B3D RLA    _malloc                   000B49 RLA    
+pusha                     000C5B RLA    pushax                    000C71 RLA    
+staspidx                  000C87 RLA    staxysp                   000C9F RLA    
+staxspidx                 000CA8 RLA    _strcpy                   000CC3 RLA    
+subysp                    000CE2 RLA    __hextab                  000D0E RLA    
+__DESTRUCTOR_TABLE__      000D25 RLA    __heapptr                 000D27 RLA    
+__heapend                 000D29 RLA    __heapfirst               000D2B RLA    
+__heaplast                000D2D RLA    __BSS_RUN__               002000 RLA    
+__HEAP_START__            002000 RLA    __HEAP_SIZE__             005000 REA    
+_puts                     00FFD0 REA    _testit                   00FFD1 REA    
+_testme                   00FFD2 REA    _lf                       00FFD3 REA    
+
+
+
+Imports list:
+-------------
+__BSS_RUN__ ([linker generated]):
+    _heap.o                   common/_heap.s(8)
+__BSS_SIZE__ ([linker generated]):
+    _heap.o                   common/_heap.s(8)
+__CONSTRUCTOR_COUNT__ ([linker generated]):
+    condes.o                  runtime/condes.s(18)
+__CONSTRUCTOR_TABLE__ ([linker generated]):
+    condes.o                  runtime/condes.s(18)
+__DESTRUCTOR_COUNT__ ([linker generated]):
+    condes.o                  runtime/condes.s(19)
+__DESTRUCTOR_TABLE__ ([linker generated]):
+    condes.o                  runtime/condes.s(19)
+__HEAP_SIZE__ ([linker generated]):
+    crt0.o                    crt0.s(5)
+__HEAP_START__ ([linker generated]):
+    crt0.o                    crt0.s(5)
+__STACKSIZE__ ([linker generated]):
+    _heap.o                   common/_heap.s(8)
+__STARTUP__ (crt0.o):
+    advdemo.o                 advdemo.s(13)
+__heapend (_heap.o):
+    malloc.o                  /home/kveroneau/src/cc65/asminc/_heap.inc(33)
+__heapfirst (_heap.o):
+    malloc.o                  /home/kveroneau/src/cc65/asminc/_heap.inc(34)
+__heaplast (_heap.o):
+    malloc.o                  /home/kveroneau/src/cc65/asminc/_heap.inc(35)
+__heapptr (_heap.o):
+    malloc.o                  /home/kveroneau/src/cc65/asminc/_heap.inc(32)
+__hextab (_hextab.o):
+    itoa.o                    common/itoa.s(10)
+_itoa (itoa.o):
+    advdemo.o                 advdemo.s(16)
+_lf (advlib.o):
+    advdemo.o                 advdemo.s(20)
+_main (advdemo.o):
+    crt0.o                    crt0.s(2)
+_malloc (malloc.o):
+    advdemo.o                 advdemo.s(15)
+_puts (puts.o):
+    advdemo.o                 advdemo.s(17)
+_strcpy (strcpy.o):
+    advdemo.o                 advdemo.s(14)
+_testit (advlib.o):
+    advdemo.o                 advdemo.s(18)
+_testme (advlib.o):
+    advdemo.o                 advdemo.s(19)
+addysp (addysp.o):
+    incsp6.o                  runtime/incsp6.s(8)
+    advdemo.o                 advdemo.s(189)
+addysp1 (addysp.o):
+    itoa.o                    common/itoa.s(9)
+decsp3 (decsp3.o):
+    advdemo.o                 advdemo.s(189)
+donelib (condes.o):
+    crt0.o                    crt0.s(7)
+incax3 (incax3.o):
+    advdemo.o                 advdemo.s(189)
+    advdemo.o                 advdemo.s(189)
+incaxy (incaxy.o):
+    incax3.o                  runtime/incax3.s(8)
+incsp2 (incsp2.o):
+    staxspi.o                 runtime/staxspi.s(9)
+    staspidx.o                runtime/staspidx.s(8)
+    advdemo.o                 advdemo.s(189)
+incsp6 (incsp6.o):
+    advdemo.o                 advdemo.s(189)
+initlib (condes.o):
+    crt0.o                    crt0.s(7)
+ldaxysp (ldaxsp.o):
+    advdemo.o                 advdemo.s(189)
+    advdemo.o                 advdemo.s(189)
+    advdemo.o                 advdemo.s(189)
+leaa0sp (leaaxsp.o):
+    advdemo.o                 advdemo.s(189)
+    advdemo.o                 advdemo.s(189)
+popax (incsp2.o):
+    strcpy.o                  common/strcpy.s(8)
+ptr1 (zeropage.o):
+    strcpy.o                  common/strcpy.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    malloc.o                  common/malloc.s(108)
+ptr2 (zeropage.o):
+    strcpy.o                  common/strcpy.s(9)
+    malloc.o                  common/malloc.s(108)
+    itoa.o                    common/itoa.s(11)
+ptr3 (zeropage.o):
+    malloc.o                  common/malloc.s(108)
+    itoa.o                    common/itoa.s(11)
+pusha (pusha.o):
+    advdemo.o                 advdemo.s(189)
+pushax (pushax.o):
+    advdemo.o                 advdemo.s(189)
+    advdemo.o                 advdemo.s(189)
+    advdemo.o                 advdemo.s(189)
+sp (zeropage.o):
+    _heap.o                   common/_heap.s(9)
+    subysp.o                  runtime/subysp.s(9)
+    staxspi.o                 runtime/staxspi.s(10)
+    staxsp.o                  runtime/staxsp.s(8)
+    staspidx.o                runtime/staspidx.s(9)
+    pushax.o                  runtime/pushax.s(8)
+    pusha.o                   runtime/pusha.s(8)
+    leaaxsp.o                 runtime/leaaxsp.s(8)
+    ldaxsp.o                  runtime/ldaxsp.s(8)
+    itoa.o                    common/itoa.s(11)
+    incsp2.o                  runtime/incsp2.s(8)
+    decsp3.o                  runtime/decsp3.s(8)
+    crt0.o                    /home/kveroneau/src/cc65/asminc/zeropage.inc(11)
+    addysp.o                  runtime/addysp.s(8)
+    advdemo.o                 advdemo.s(10)
+sreg (zeropage.o):
+    itoa.o                    common/itoa.s(11)
+staspidx (staspidx.o):
+    advdemo.o                 advdemo.s(189)
+staxspidx (staxspi.o):
+    advdemo.o                 advdemo.s(189)
+staxysp (staxsp.o):
+    advdemo.o                 advdemo.s(189)
+subysp (subysp.o):
+    advdemo.o                 advdemo.s(189)
+tmp1 (zeropage.o):
+    staxspi.o                 runtime/staxspi.s(10)
+    staspidx.o                runtime/staspidx.s(9)
+    itoa.o                    common/itoa.s(11)
+    incaxy.o                  runtime/incaxy.s(8)
+

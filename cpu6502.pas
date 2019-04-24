@@ -61,7 +61,7 @@ type
       0: (Reg: Byte);
       1: (Flag: TFlags);
   end;
-  TIOCallbackFunc = function(addr: Word): Boolean of object;
+  TIOCallbackFunc = function(addr: Word): Boolean;
 
   { T6502Memory }
 
@@ -84,6 +84,8 @@ type
     function Seek(const Offset: int64; Origin: TSeekOrigin): Longint;
     procedure LoadFromStream(Stream: TStream);
     procedure LoadFromFile(const FileName: string);
+    procedure SaveToStream(Stream: TStream);
+    procedure SaveToFile(const FileName: string);
     function HandleIOCall(addr: Word): Boolean;
     procedure SetIOCallback(addr: Byte; callback: TIOCallbackFunc);
     property Position: PtrInt read FPosition write FPosition;
@@ -125,19 +127,21 @@ type
     function pop: Byte;
     procedure branch(offset: Byte);
     procedure process_op;
-    function default_BRK(addr: Word): Boolean;
   public
     constructor Create;
     destructor Destroy; override;
     property Memory: T6502Memory read FMemory;
     property Flags: TCPUFlags read regP;
     property Running: Boolean read FRunning;
-    procedure Reset(PC: Word);
+    property PC: Word read regPC;
+    function default_BRK(addr: Word): Boolean;
+    procedure Reset(addr: Word);
     procedure RunSlice;
     procedure Run;
     procedure IRQ(addr: Word);
     procedure BRK;
     procedure NMI;
+    procedure ShowStatus;
     { This method names will change in the future... }
     function popax: Word;
     procedure setax(value: Word);
@@ -149,7 +153,7 @@ type
 implementation
 
 const
-  MSize=$ffff; { Although this should never change... }
+  MSize=$10000; { Although this should never change... }
 
 { T6502 }
 
@@ -559,10 +563,11 @@ begin
       end;
     $20: { JSR }
       begin
+        value:=fetch16;
         addr:=regPC-1;
         push((addr shr 8) and $ff);
         push((addr and $ff));
-        regPC:=fetch16;
+        regPC:=value;
       end;
     $21: { AND (Ind,X) }
       begin
@@ -939,21 +944,21 @@ begin
   inherited Destroy;
 end;
 
-procedure T6502.Reset(PC: Word);
+procedure T6502.Reset(addr: Word);
 begin
   regA:=0;
   regX:=0;
   regY:=0;
   regP.Reg:=0;
-  regPC:=PC;
+  regPC:=addr;
   regSP:=$ff;
   regSS:=$100;
   FRunning:=False;
   intr_ptr:=0;
   FMemory.setW($fffa, $fff0); { Default NMI handler. }
-  FMemory.setW($fffc, PC); { Set the RESET vector to allow for soft restarts. }
+  FMemory.setW($fffc, addr); { Set the RESET vector to allow for soft restarts. }
   FMemory.setW($fffe, $fff0); { Default BRK/IRQ handler. }
-  FMemory.SetIOCallback($f0, @default_BRK); { Set our IO callback! }
+  {FMemory.SetIOCallback($f0, @default_BRK); { Set our IO callback! }}
 end;
 
 procedure T6502.RunSlice;
@@ -1009,6 +1014,20 @@ begin
   push(regPC and $ff);
   push(regP.Reg);
   regPC:=FMemory.getW($fffa); { $FFFA is the normal NMI vector on 6502 }
+end;
+
+procedure T6502.ShowStatus;
+var
+  tmp: Integer;
+begin
+  Write(LineEnding,'A=',regA);
+  Write(', X=',regX);
+  Write(', Y=',regY);
+  tmp:=regSP;
+  Write(', S=',IntToHex(tmp,2));
+  tmp:=pop;
+  tmp:=popax;
+  WriteLn(', PC=',IntToHex(tmp,4));
 end;
 
 function T6502.popax: Word;
@@ -1157,6 +1176,23 @@ begin
   S:=TFileStream.Create(FileName,fmOpenRead or fmShareDenyWrite);
   try
     LoadFromStream(S);
+  finally
+    S.Free;
+  end;
+end;
+
+procedure T6502Memory.SaveToStream(Stream: TStream);
+begin
+  Stream.WriteBuffer(FMemory^, MSize);
+end;
+
+procedure T6502Memory.SaveToFile(const FileName: string);
+var
+  S: TFileStream;
+begin
+  S:=TFileStream.Create (FileName,fmCreate);
+  try
+    SaveToStream(S);
   finally
     S.Free;
   end;

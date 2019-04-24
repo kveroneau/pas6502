@@ -12,7 +12,7 @@
     </CompilerOptions>
     <Description Value="This is my 65c02 CPU Emulator/Virtual Machine made in ObjectPascal for use in my upcoming ArcVM project.  This CPU is not cycle acurate, as that was not the point of it's development.  It will run as fast as possible on the host operating system."/>
     <License Value="This is licensed under the GPLv2, and therefore can be used in other programs as long as the entire program is open source, and potential bug fixes and patches are provided upstream.  Not much to ask, right?"/>
-    <Version Minor="3"/>
+    <Version Minor="4"/>
     <Files Count="1">
       <Item1>
         <Filename Value="cpu6502.pas"/>
